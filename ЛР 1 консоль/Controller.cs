@@ -8,10 +8,10 @@ namespace Server
     public class Controller
     {
         public string Path { get; set; }
-        public CSVDataHandler dataHandler { get; set; }
-        public Controller()
+        private CSVDataHandler dataHandler { get; set; } //public
+        public Controller(char delimeter)
         {
-            dataHandler = new CSVDataHandler(';');
+            dataHandler = new CSVDataHandler(delimeter);
         }
 
         public bool SetAndCheckPath(string path)
@@ -49,7 +49,6 @@ namespace Server
         }
         public void SaveNewData(List<string> productData)
         {
-
             dataHandler.SaveProduct(Path, dataHandler.ParseTextToProduct(productData));
         }
         public void DeleteData(int position)
