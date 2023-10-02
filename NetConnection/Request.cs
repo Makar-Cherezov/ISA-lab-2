@@ -7,6 +7,7 @@ namespace NetConnection
     {
         public string Action { get; }
         public List<string> Content { get; set; }
+        [System.Text.Json.Serialization.JsonConstructor]
         public Request(string action, List<string> content)
         {
             Action = action;

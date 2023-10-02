@@ -11,31 +11,49 @@ namespace Server
     
     class Listener
     {
-        public Controller controller;
-        public void FillRequest(ref Request req)
+        
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        public static void FillRequest(ref Request req)
         {
             switch (req.Action)
             {
                 case "SetAndCheckPath":
-                    string isSuccess = controller.SetAndCheckPath(req.Content[0]).ToString();
+                    string isSuccess = Controller.GetInstance().SetAndCheckPath(req.Content[0]).ToString();
                     req.Content = new List<string> { isSuccess };
                     break;
                 case "GetFullData":
-                    List<string> list = controller.GetFullData();
+                    List<string> list = Controller.GetInstance().GetFullData();
                     req.Content = list;
                     break;
                 case "GetLineByNumber":
-                    string line = controller.GetLineByNumber(int.Parse(req.Content[0]));
-                    req.Content = new List<string> { line };
+                    try
+                    {
+                        string line = Controller.GetInstance().GetLineByNumber(int.Parse(req.Content[0]));
+                        req.Content = new List<string> { line };
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex.Message);
+                        req.Content = new List<string> { "Такой строки нет в файле!\n" };
+                    }
                     break;
                 case "SaveNewData":
-                    controller.SaveNewData(req.Content);
+                    Controller.GetInstance().SaveNewData(req.Content);
                     break;
                 case "DeleteData":
-                    controller.DeleteData(int.Parse(req.Content[0]));
+                    try
+                    {
+                        Controller.GetInstance().DeleteData(int.Parse(req.Content[0]));
+                        req.Content = new List<string> { "True" };
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex.Message);
+                        req.Content = new List<string> { "False" };
+                    }
                     break;
                 case "Shutdown":
-                    // как остановить программу
+                    Logger.Info("Клиент был отключён.");
                     break;
                 default:
                     req.Content = new List<string> { "Unexpected behaviour" };
@@ -45,29 +63,42 @@ namespace Server
             }
         }
 
-        public async Task AnswerRequestAsync(NetworkStream stream)
+        public static async Task AnswerRequestAsync(NetworkStream stream) 
         {
-            List<byte> data = new List<byte>();
-            while (stream.DataAvailable)
+            try
             {
-                data.Add((byte)stream.ReadByte());
+                while (true)
+                {
+                    List<byte> data = new List<byte>();
+                    while (!stream.DataAvailable) ;
+                    while (stream.DataAvailable)
+                    {
+                        data.Add((byte)stream.ReadByte());
+                    }
+                    string json = Encoding.Unicode.GetString(data.ToArray());
+                    Request request = Request.GetRequest(json);
+                    FillRequest(ref request);
+                    string responseJson = request.GetJson();
+                    await stream.WriteAsync(Encoding.Unicode.GetBytes(responseJson));
+                }
             }
-            string json = Encoding.UTF8.GetString(data.ToArray());
-            Request request = Request.GetRequest(json);
-            FillRequest(ref request);
-            string responseJson = request.GetJson();
-            await stream.WriteAsync(Encoding.UTF8.GetBytes(responseJson));
+            catch (Exception ex)
+            {
+                Logger.Info(ex.Message);
+            }
         }
-        public async void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            controller = new Controller(';');
             TcpListener server = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), 8080);
             try
             {
                 server.Start();
+                Console.WriteLine("Сервер запущен");
                 while (true)
                 {
                     using var tcpClient = await server.AcceptTcpClientAsync();
+                    Console.WriteLine("Установлено соединение с клиентом");
+                    Logger.Info("Установлено соединение с клиентом");
                     NetworkStream stream = tcpClient.GetStream();
                     await AnswerRequestAsync(stream);
                 }
@@ -76,6 +107,7 @@ namespace Server
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Logger.Info(ex.Message);
             }
             finally
             {

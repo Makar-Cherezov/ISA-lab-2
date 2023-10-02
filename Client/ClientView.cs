@@ -31,71 +31,87 @@ namespace Client
         public static void PrintByNumber(RequestController rc)
         {
             Console.WriteLine("Введите номер записи.");
-            bool success = false;
-            while (!success)
-            {
-                try
-                {
-                    int position = int.Parse(Console.ReadLine());
-                    ResetConsole();
-                    Console.WriteLine(rc.GetLineByNumber(position));
-                    success = true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Неверный ввод. Введите целое положительное число.");
-                }
-            }
+            int position = int.Parse(Console.ReadLine());
+            ResetConsole();
+            Console.WriteLine(rc.GetLineByNumber(position));
         }
         public static void SaveNewData(RequestController rc)
         {
+            string input = "";
             List<string> productData = new List<string>();
-            Console.WriteLine("Введите название товара: ");
-            productData.Add(Console.ReadLine());
-            Console.WriteLine("Введите название продавца: ");
-            productData.Add(Console.ReadLine());
-            Console.WriteLine("Введите описание товара: ");
-            productData.Add(Console.ReadLine());
-            
-            string price = "";
-            while(!Validator.IsCorrectPrice(price))
-            {
-                Console.WriteLine("Введите стоимость товара, используйте запятую для отделения десятичной части: ");
-                price = Console.ReadLine();
-            }
-            productData.Add(price);
 
-            Console.WriteLine("Есть ли товар в наличии? true/false: ");
-            productData.Add(Console.ReadLine());
-            Console.WriteLine("Введите дату появления товара в формате дд.мм.гггг: ");
-            productData.Add(Console.ReadLine());
+            Console.WriteLine("Введите название товара: ");
+            while (!Validator.IsCorrectString(input))
+            {
+                input = Console.ReadLine();
+            }
+            productData.Add(input);
+            input = "";
+
+            Console.WriteLine("Введите название продавца: ");
+            while (!Validator.IsCorrectString(input))
+            {
+                input = Console.ReadLine();
+            }
+            productData.Add(input);
+            input = "";
+
+            Console.WriteLine("Введите описание товара: ");
+            while (!Validator.IsCorrectString(input))
+            {
+                input = Console.ReadLine();
+            }
+            productData.Add(input);
+            input = "";
+
+            while (!Validator.IsCorrectPrice(ref input))
+            {
+                Console.WriteLine("Введите стоимость товара:");
+                input = Console.ReadLine();
+            }
+            productData.Add(input);
+            input = "";
+                        
+            while (!Validator.IsCorrectBool(ref input))
+            {
+                Console.WriteLine("Есть ли товар в наличии? Да/Нет: ");
+                input = Console.ReadLine();
+            }
+            productData.Add(input);
+            input = "";
+
+            while (!Validator.IsCorrectDate(ref input))
+            {
+                Console.WriteLine("Введите дату появления товара в формате дд.мм.гггг: ");
+                input = Console.ReadLine();
+            }
+            productData.Add(input);
+
             rc.SaveNewData(productData);
             Console.WriteLine("Запись добавлена!");
         }
         public static void ChangePath(RequestController rc)
         {
-            Console.WriteLine("Введите путь до файла:");
-            if (rc.SetAndCheckPath(Console.ReadLine()))
+            while (true)
             {
-                Console.WriteLine("Файл открыт успешно!");
+                Console.WriteLine("Введите путь до файла:");
+                if (rc.SetAndCheckPath(Console.ReadLine()))
+                {
+                    Console.WriteLine("Файл открыт успешно!");
+                    return;
+                }
+                else Console.WriteLine("Неверно введён путь или файл не существует.");
             }
-            else Console.WriteLine("Неверно введён путь или файл не существует.");
-            
         }
         public static void DeleteData(RequestController rc)
         {
             Console.WriteLine("Введите номер строки для удаления: ");
-            try
-            {
-                int pos = int.Parse(Console.ReadLine());
-                rc.DeleteData(pos);
-                ResetConsole();
+            int pos = int.Parse(Console.ReadLine());
+            ResetConsole();
+            if (rc.DeleteData(pos))
                 Console.WriteLine($"Запись по номеру {pos} удалена!\n");
-            }
-            catch
-            {
+            else
                 Console.WriteLine("Ввод некорректен или такой строки нет в файле!\n");
-            }
         }
 
         public static void ProcessUserAction(RequestController rc)

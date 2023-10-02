@@ -20,19 +20,19 @@ namespace Client
 		public Request SendRequest(Request request)
 		{
 			List<byte> data = new List<byte>();
-			stream.Write(Encoding.UTF8.GetBytes(request.GetJson()));
+			stream.Write(Encoding.Unicode.GetBytes(request.GetJson()));
 			do
 			{
 				data.Add((byte)stream.ReadByte());
 			}
 			while (stream.DataAvailable);
-			string json = Encoding.UTF8.GetString(data.ToArray());
+			string json = Encoding.Unicode.GetString(data.ToArray());
 			return Request.GetRequest(json);
 		}
 		public bool SetAndCheckPath(string path)
         {
 			Request answer = SendRequest(new Request("SetAndCheckPath", path));
-			return (answer.Content[0] == "true");
+			return (answer.Content[0] == "True");
         }
 
 		public List<string> GetFullData()
@@ -51,9 +51,10 @@ namespace Client
 			SendRequest(new Request("SaveNewData", productsData));
 		}
 
-		public void DeleteData(int position)
+		public bool DeleteData(int position)
         {
-			SendRequest(new Request("DeleteData", position.ToString()));
+			Request answer = SendRequest(new Request("DeleteData", position.ToString()));
+			return (answer.Content[0] == "True");
 		}
 
 		public void Shutdown()

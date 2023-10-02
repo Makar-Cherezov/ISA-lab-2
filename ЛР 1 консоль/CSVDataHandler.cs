@@ -50,8 +50,15 @@ namespace Server
         }
         public ProductData LoadByNumber(string path, int position)
         {
-            string line = File.ReadLines(path).Skip(position - 1).First();
-            return ParseTextToProduct(line);
+            try
+            {
+                string line = File.ReadLines(path).ElementAt(position);
+                return ParseTextToProduct(line);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Обращение к несуществующей строке.");
+            }
         }
         public void SaveProduct(string path, ProductData product)
         {
@@ -80,7 +87,7 @@ namespace Server
         {
             List<string> dataList = File.ReadLines(path).ToList();
             if (position < 1 || dataList.Count() < position)
-            { throw new Exception(); }
+            { throw new Exception("Выбранной для удаления строки нет в файле"); }
             File.WriteAllLines(path,
                 File.ReadLines(path).Where((line, index) => index != position - 1).ToList());
         }

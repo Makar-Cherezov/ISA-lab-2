@@ -7,6 +7,12 @@ namespace Server
 {
     public class Controller
     {
+        private static Controller? instance;
+        public static Controller GetInstance()
+        {
+            instance ??= new Controller(';');
+            return instance;
+        }
         public string Path { get; set; }
         private CSVDataHandler dataHandler { get; set; } //public
         public Controller(char delimeter)
