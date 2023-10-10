@@ -4,18 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
-using ЛР_1_консоль;
+
 
 namespace Server
 {
     public class CSVDataHandler : DataHandler
     {
+        private string Path {  get; set; }
         char Delimeter { get; set; }
         public CSVDataHandler(char delimeter)
         {
             Delimeter = delimeter;
         }
-        public override ProductData ParseLineToProduct(string line)
+        public override void SetPath(string path)
+        {
+            Path = path;
+        }
+        public ProductData ParseLineToProduct(string line)
         {
             string[] fields = line.Split(Delimeter);
             return new ProductData(fields[0], 
@@ -23,14 +28,8 @@ namespace Server
                             float.Parse(fields[3]), bool.Parse(fields[4]), 
                             DateTime.Parse(fields[5]));
         }
-        public override ProductData ParseFieldsToProduct(List<string> fields)
-        {
-            return new ProductData(fields[0],
-                fields[1], fields[2],
-                            float.Parse(fields[3]), bool.Parse(fields[4]), 
-                            DateTime.Parse(fields[5]));
-        }
-        public override string ParseProductToLine(ProductData product)
+        
+        public string ParseProductToLine(ProductData product)
         {
             string line = product.ProductName + Delimeter +
                 product.SellerName + Delimeter +
@@ -41,21 +40,21 @@ namespace Server
             return line;
         }
 
-        public override dynamic LoadAll(string path)
+        public override List<ProductData> LoadAll()
         {
             List<ProductData> allProducts = new List<ProductData>();
-            string[] lines = File.ReadAllLines(path);
+            string[] lines = File.ReadAllLines(Path);
             foreach (string line in lines)
             {
                 allProducts.Add(ParseLineToProduct(line));
             }
             return allProducts;
         }
-        public override ProductData LoadByNumber(string path, int position)
+        public override ProductData LoadByNumber(int position)
         {
             try
             {
-                string line = File.ReadLines(path).ElementAt(position);
+                string line = File.ReadLines(Path).ElementAt(position);
                 return ParseLineToProduct(line);
             }
             catch(Exception ex)
@@ -63,16 +62,16 @@ namespace Server
                 throw new Exception("Обращение к несуществующей строке.");
             }
         }
-        public override void SaveProduct(string path, ProductData product)
+        public override void SaveProduct(ProductData product)
         {
-            using (var streamWriter = new StreamWriter(path, append: true))
+            using (var streamWriter = new StreamWriter(Path, append: true))
             {
                 streamWriter.WriteLine(ParseProductToLine(product));
             }
         }
-        public override void SaveAllProducts(string path, List<ProductData> allProducts)
+        public override void SaveAllProducts(List<ProductData> allProducts)
         {
-            using (var streamWriter = new StreamWriter(path))
+            using (var streamWriter = new StreamWriter(Path))
             {
                 foreach (var product in allProducts)
                 {
@@ -86,13 +85,13 @@ namespace Server
         //    File.WriteAllLines(path, 
         //        File.ReadLines(path).Where(l => l != ParseProductToLine(product)).ToList());
         //}
-        public override void DeleteProduct(string path, int position)
+        public override void DeleteProduct(int position)
         {
-            List<string> dataList = File.ReadLines(path).ToList();
+            List<string> dataList = File.ReadLines(Path).ToList();
             if (position < 1 || dataList.Count() < position)
             { throw new Exception("Выбранной для удаления строки нет в файле"); }
-            File.WriteAllLines(path,
-                File.ReadLines(path).Where((line, index) => index != position - 1).ToList());
+            File.WriteAllLines(Path,
+                File.ReadLines(Path).Where((line, index) => index != position - 1).ToList());
         }
 
     }

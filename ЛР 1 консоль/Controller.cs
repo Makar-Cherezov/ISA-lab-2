@@ -13,7 +13,6 @@ namespace Server
             instance ??= new Controller(modeltype);
             return instance;
         }
-        public string Path { get; set; }
         private DataHandler dataHandler { get; set; } 
         public Controller(string modeltype)
         {
@@ -27,11 +26,11 @@ namespace Server
                     break;
             }
         }
-        public bool SetAndCheckPath(string path) // спрятать для sql
+        public bool SetAndCheckPath(string path)
         {
             if (File.Exists(path) && System.IO.Path.GetExtension(path) == ".csv")
             {
-                Path = path;
+                dataHandler.SetPath(path);
                 return true;
             }
             else return false;
@@ -45,7 +44,7 @@ namespace Server
         }
         public List<string> GetFullData()
         {
-            var rawData = dataHandler.LoadAll(Path);
+            var rawData = dataHandler.LoadAll();
             var printableData = new List<string>();
             int pos = 1;
             foreach (var product in rawData)
@@ -57,16 +56,16 @@ namespace Server
         }
         public string GetLineByNumber(int pos)
         {
-            var rawData = dataHandler.LoadByNumber(Path, pos);
+            var rawData = dataHandler.LoadByNumber(pos);
             return GetString(rawData.GetPrintableStrings(), pos);
         }
         public void SaveNewData(List<string> productData)
         {
-            dataHandler.SaveProduct(Path, dataHandler.ParseFieldsToProduct(productData));
+            dataHandler.SaveProduct(ProductData.ParseFieldsToProduct(productData));
         }
         public void DeleteData(int position)
         {
-            dataHandler.DeleteProduct(Path, position);
+            dataHandler.DeleteProduct(position);
         }
 
     }

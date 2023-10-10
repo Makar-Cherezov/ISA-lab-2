@@ -34,5 +34,12 @@ namespace Server
             fields.Add(DateOfUpdating.ToString());
             return fields;
         }
+        public static ProductData ParseFieldsToProduct(List<string> fields)
+        {
+            return new ProductData(fields[0],
+                fields[1], fields[2],
+                            float.Parse(fields[3]), bool.Parse(fields[4]),
+                            DateTime.Parse(fields[5]));
+        }
     }
 }

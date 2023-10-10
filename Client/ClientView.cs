@@ -162,13 +162,30 @@ namespace Client
         {
             RequestController rc = new RequestController("127.0.0.1", 8080);
             GreetUser();
-            ChangePath(rc);
+            ChooseModel(rc);
             do
             {
                 PrintMenu();
                 ProcessUserAction(rc);
             } while (true);         
             
+        }
+
+        public static void ChooseModel(RequestController rc)
+        {
+            Console.WriteLine("Выберите тип модели: 1 - csv, 2 - sql");
+            switch (Console.ReadKey(true).Key)
+            {
+                case ConsoleKey.D1:
+                case ConsoleKey.NumPad1:
+                    rc.SetModelType("csv");
+                    ChangePath(rc);
+                    break;
+                case ConsoleKey.D2:
+                case ConsoleKey.NumPad2:
+                    rc.SetModelType("sql");
+                    break;
+            }
         }
     }
 }

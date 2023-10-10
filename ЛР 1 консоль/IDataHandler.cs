@@ -1,36 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ЛР_1_консоль;
 
 namespace Server
 {
     public interface IDataLoader
     {
 
-        public dynamic LoadAll(string path);
+        public List<ProductData> LoadAll();
 
-        public ProductData LoadByNumber(string path, int position);
+        public ProductData LoadByNumber(int position);
 
 
     }
     public interface IDataSaver
     {
-        public void SaveProduct(string path, ProductData product);
+        public void SaveProduct(ProductData product);
 
-        public void SaveAllProducts(string path, List<ProductData> allProduct);
+        public void SaveAllProducts(List<ProductData> allProduct);
 
-        public void DeleteProduct(string path, int position);
+        public void DeleteProduct(int position);
 
     }
 
-    public interface IDataParser
-    {
-        public ProductData ParseLineToProduct(string line);
-        public ProductData ParseFieldsToProduct(List<string> fields);
-
-        public string ParseProductToLine(ProductData product);
-    }
+ 
 
 
 }

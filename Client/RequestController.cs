@@ -35,6 +35,11 @@ namespace Client
 			return (answer.Content[0] == "True");
         }
 
+		public bool SetModelType(string modeltype)
+		{
+            Request answer = SendRequest(new Request("SetModelType", modeltype));
+            return (answer.Content[0] == "True");
+        }
 		public List<string> GetFullData()
         {
 			Request answer = SendRequest(new Request("GetFullData", ""));
