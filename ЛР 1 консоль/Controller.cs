@@ -8,19 +8,26 @@ namespace Server
     public class Controller
     {
         private static Controller? instance;
-        public static Controller GetInstance()
+        public static Controller GetInstance(string modeltype)
         {
-            instance ??= new Controller(';');
+            instance ??= new Controller(modeltype);
             return instance;
         }
         public string Path { get; set; }
-        private CSVDataHandler dataHandler { get; set; } //public
-        public Controller(char delimeter)
+        private DataHandler dataHandler { get; set; } 
+        public Controller(string modeltype)
         {
-            dataHandler = new CSVDataHandler(delimeter);
+            switch(modeltype)
+            {
+                case "csv":
+                    dataHandler = new CSVDataHandler(';');
+                    break;
+                case "sql":
+                    dataHandler = new SQLDataHandler();
+                    break;
+            }
         }
-
-        public bool SetAndCheckPath(string path)
+        public bool SetAndCheckPath(string path) // спрятать для sql
         {
             if (File.Exists(path) && System.IO.Path.GetExtension(path) == ".csv")
             {
@@ -55,7 +62,7 @@ namespace Server
         }
         public void SaveNewData(List<string> productData)
         {
-            dataHandler.SaveProduct(Path, dataHandler.ParseTextToProduct(productData));
+            dataHandler.SaveProduct(Path, dataHandler.ParseFieldsToProduct(productData));
         }
         public void DeleteData(int position)
         {

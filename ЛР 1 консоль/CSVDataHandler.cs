@@ -4,30 +4,33 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
+using ЛР_1_консоль;
 
 namespace Server
 {
-    public class CSVDataHandler : IDataSaver, IDataLoader, IDataParser
+    public class CSVDataHandler : DataHandler
     {
         char Delimeter { get; set; }
         public CSVDataHandler(char delimeter)
         {
             Delimeter = delimeter;
         }
-        public ProductData ParseTextToProduct(string line)
+        public override ProductData ParseLineToProduct(string line)
         {
             string[] fields = line.Split(Delimeter);
             return new ProductData(fields[0], 
                 fields[1], fields[2],
-                            float.Parse(fields[3]), bool.Parse(fields[4]), DateTime.Parse(fields[5]));
+                            float.Parse(fields[3]), bool.Parse(fields[4]), 
+                            DateTime.Parse(fields[5]));
         }
-        public ProductData ParseTextToProduct(List<string> fields)
+        public override ProductData ParseFieldsToProduct(List<string> fields)
         {
             return new ProductData(fields[0],
                 fields[1], fields[2],
-                            float.Parse(fields[3]), bool.Parse(fields[4]), DateTime.Parse(fields[5]));
+                            float.Parse(fields[3]), bool.Parse(fields[4]), 
+                            DateTime.Parse(fields[5]));
         }
-        public string ParseProductToLine(ProductData product)
+        public override string ParseProductToLine(ProductData product)
         {
             string line = product.ProductName + Delimeter +
                 product.SellerName + Delimeter +
@@ -38,36 +41,36 @@ namespace Server
             return line;
         }
 
-        public List<ProductData> LoadAll(string path)
+        public override dynamic LoadAll(string path)
         {
             List<ProductData> allProducts = new List<ProductData>();
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
             {
-                allProducts.Add(ParseTextToProduct(line));
+                allProducts.Add(ParseLineToProduct(line));
             }
             return allProducts;
         }
-        public ProductData LoadByNumber(string path, int position)
+        public override ProductData LoadByNumber(string path, int position)
         {
             try
             {
                 string line = File.ReadLines(path).ElementAt(position);
-                return ParseTextToProduct(line);
+                return ParseLineToProduct(line);
             }
             catch(Exception ex)
             {
                 throw new Exception("Обращение к несуществующей строке.");
             }
         }
-        public void SaveProduct(string path, ProductData product)
+        public override void SaveProduct(string path, ProductData product)
         {
             using (var streamWriter = new StreamWriter(path, append: true))
             {
                 streamWriter.WriteLine(ParseProductToLine(product));
             }
         }
-        public void SaveAllProducts(string path, List<ProductData> allProducts)
+        public override void SaveAllProducts(string path, List<ProductData> allProducts)
         {
             using (var streamWriter = new StreamWriter(path))
             {
@@ -78,12 +81,12 @@ namespace Server
                 
             }
         }
-        public void DeleteProduct(string path, ProductData product) // можно сделать удаление по слову
-        {
-            File.WriteAllLines(path, 
-                File.ReadLines(path).Where(l => l != ParseProductToLine(product)).ToList());
-        }
-        public void DeleteProduct(string path, int position)
+        //public override void DeleteProduct(string path, ProductData product) // можно сделать удаление по слову
+        //{
+        //    File.WriteAllLines(path, 
+        //        File.ReadLines(path).Where(l => l != ParseProductToLine(product)).ToList());
+        //}
+        public override void DeleteProduct(string path, int position)
         {
             List<string> dataList = File.ReadLines(path).ToList();
             if (position < 1 || dataList.Count() < position)

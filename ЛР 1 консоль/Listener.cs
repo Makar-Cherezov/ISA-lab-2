@@ -11,24 +11,27 @@ namespace Server
     
     class Listener
     {
-        
+        private static string ModelType { get; set; }
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public static void FillRequest(ref Request req)
         {
             switch (req.Action)
             {
+                case "SetModelType":
+                    ModelType = req.Content[0];
+                    break;
                 case "SetAndCheckPath":
-                    string isSuccess = Controller.GetInstance().SetAndCheckPath(req.Content[0]).ToString();
+                    string isSuccess = Controller.GetInstance(ModelType).SetAndCheckPath(req.Content[0]).ToString();
                     req.Content = new List<string> { isSuccess };
                     break;
                 case "GetFullData":
-                    List<string> list = Controller.GetInstance().GetFullData();
+                    List<string> list = Controller.GetInstance(ModelType).GetFullData();
                     req.Content = list;
                     break;
                 case "GetLineByNumber":
                     try
                     {
-                        string line = Controller.GetInstance().GetLineByNumber(int.Parse(req.Content[0]));
+                        string line = Controller.GetInstance(ModelType).GetLineByNumber(int.Parse(req.Content[0]));
                         req.Content = new List<string> { line };
                     }
                     catch (Exception ex)
@@ -38,12 +41,12 @@ namespace Server
                     }
                     break;
                 case "SaveNewData":
-                    Controller.GetInstance().SaveNewData(req.Content);
+                    Controller.GetInstance(ModelType).SaveNewData(req.Content);
                     break;
                 case "DeleteData":
                     try
                     {
-                        Controller.GetInstance().DeleteData(int.Parse(req.Content[0]));
+                        Controller.GetInstance(ModelType).DeleteData(int.Parse(req.Content[0]));
                         req.Content = new List<string> { "True" };
                     }
                     catch (Exception ex)
@@ -112,8 +115,6 @@ namespace Server
             finally
             {
                 server.Stop();
-                //очистить клиент и поток
-                
             }
 
 

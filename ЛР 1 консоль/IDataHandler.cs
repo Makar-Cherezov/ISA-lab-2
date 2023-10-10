@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ЛР_1_консоль;
 
 namespace Server
 {
     public interface IDataLoader
     {
 
-        public List<ProductData> LoadAll(string path);
+        public dynamic LoadAll(string path);
 
         public ProductData LoadByNumber(string path, int position);
 
@@ -19,13 +20,14 @@ namespace Server
 
         public void SaveAllProducts(string path, List<ProductData> allProduct);
 
-        public void DeleteProduct(string path, ProductData product);
+        public void DeleteProduct(string path, int position);
 
     }
 
     public interface IDataParser
     {
-        public ProductData ParseTextToProduct(string line);
+        public ProductData ParseLineToProduct(string line);
+        public ProductData ParseFieldsToProduct(List<string> fields);
 
         public string ParseProductToLine(ProductData product);
     }
