@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Server.Model;
+
 
 
 namespace Server
@@ -18,7 +20,7 @@ namespace Server
             {
                 using var context = new CherezovAisContext();
                 var entities = context.Set<ProductDatum>();
-                entities.Remove(entities.OrderBy(x => x.ProductName).ToList().ElementAt(position));
+                entities.Remove(entities.OrderBy(x => x.ProductName).ToList().ElementAt(position - 1));
                 context.SaveChanges();
             }
             catch { throw; }
@@ -45,7 +47,9 @@ namespace Server
             {
                 prList.Add(ent.GetProduct());
             }
-            return prList[position];
+            return prList[position - 1];
+            
+            
         }
 
         public override void SaveAllProducts(List<ProductData> allProduct)

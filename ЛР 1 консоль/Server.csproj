@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>ЛР_1_консоль</RootNamespace>
+    <RootNamespace>Server</RootNamespace>
     <UserSecretsId>63363c57-3b94-43ad-9ea7-a903fcff24e0</UserSecretsId>
   </PropertyGroup>
 

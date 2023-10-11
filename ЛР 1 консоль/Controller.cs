@@ -35,11 +35,11 @@ namespace Server
             }
             else return false;
         }
-        public string GetString(List<string> fields, int pos = 1)
+        public string GetString(List<string> fields, int pos)
         {
             string result = pos.ToString() + " | ";
             foreach (string field in fields)
-                result += field + " | ";
+                result += string.Format("{0, 30}", field + " | ");
             return result;
         }
         public List<string> GetFullData()
@@ -56,7 +56,7 @@ namespace Server
         }
         public string GetLineByNumber(int pos)
         {
-            var rawData = dataHandler.LoadByNumber(pos);
+            ProductData rawData = dataHandler.LoadByNumber(pos);
             return GetString(rawData.GetPrintableStrings(), pos);
         }
         public void SaveNewData(List<string> productData)

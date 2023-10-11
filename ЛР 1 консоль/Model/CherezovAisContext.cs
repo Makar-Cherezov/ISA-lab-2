@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Server;
+namespace Server.Model;
 
 public partial class CherezovAisContext : DbContext
 {
@@ -31,12 +31,13 @@ public partial class CherezovAisContext : DbContext
     {
         modelBuilder.Entity<ProductDatum>(entity =>
         {
-            entity.HasNoKey();
-
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("ID");
             entity.Property(e => e.DateOfUpdating).HasColumnType("date");
             entity.Property(e => e.ProductDescription)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(110);
             entity.Property(e => e.ProductName)
                 .IsRequired()
                 .HasMaxLength(50);

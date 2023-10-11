@@ -1,10 +1,9 @@
-﻿using Server;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace Server;
+namespace Server.Model;
 
-public partial class ProductDatum : IDataStructure
+public partial class ProductDatum
 {
     public string ProductName { get; set; }
 
@@ -17,6 +16,8 @@ public partial class ProductDatum : IDataStructure
     public bool IsAvailable { get; set; }
 
     public DateTime DateOfUpdating { get; set; }
+
+    public Guid Id { get; set; }
 
     public List<string> GetPrintableStrings()
     {
@@ -32,15 +33,15 @@ public partial class ProductDatum : IDataStructure
 
     public ProductData GetProduct()
     {
-        return new ProductData(ProductName, SellerName, 
-            ProductDescription, (float)Price, IsAvailable, DateOfUpdating);
+        return new ProductData(ProductName, SellerName,
+        ProductDescription, (float)Price, IsAvailable, DateOfUpdating);
     }
     public static ProductDatum CreateEntity(ProductData product)
     {
         ProductDatum entity = new ProductDatum();
         entity.ProductName = product.ProductName;
         entity.SellerName = product.SellerName;
-        entity.ProductDescription = product.ProductDescription; 
+        entity.ProductDescription = product.ProductDescription;
         entity.Price = product.Price;
         entity.IsAvailable = product.IsAvailable;
         entity.DateOfUpdating = product.DateOfUpdating;
