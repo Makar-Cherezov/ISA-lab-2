@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
+using NetConnection;
 
 
 namespace Server
@@ -94,5 +95,9 @@ namespace Server
                 File.ReadLines(Path).Where((line, index) => index != position - 1).ToList());
         }
 
+        public override void SaveOrUpdateProduct(ProductData product, int pos)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

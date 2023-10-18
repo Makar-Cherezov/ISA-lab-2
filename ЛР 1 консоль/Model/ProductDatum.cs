@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using NetConnection;
 namespace Server.Model;
 
 public partial class ProductDatum
@@ -45,6 +45,7 @@ public partial class ProductDatum
         entity.Price = product.Price;
         entity.IsAvailable = product.IsAvailable;
         entity.DateOfUpdating = product.DateOfUpdating;
+        entity.Id = Guid.NewGuid();
         return entity;
     }
 }

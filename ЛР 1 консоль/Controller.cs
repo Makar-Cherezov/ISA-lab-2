@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using NetConnection;
+using System.Linq;
 
 namespace Server
 {
@@ -35,33 +37,26 @@ namespace Server
             }
             else return false;
         }
-        public string GetString(List<string> fields, int pos)
-        {
-            string result = pos.ToString() + " | ";
-            foreach (string field in fields)
-                result += string.Format("{0, 30}", field + " | ");
-            return result;
-        }
         public List<string> GetFullData()
         {
             var rawData = dataHandler.LoadAll();
             var printableData = new List<string>();
-            int pos = 1;
             foreach (var product in rawData)
             {
-                printableData.Add(GetString(product.GetPrintableStrings(), pos));
-                pos++;
+                printableData.Add(string.Join(';',product.GetPrintableStrings()));
             }
             return printableData;
         }
         public string GetLineByNumber(int pos)
         {
             ProductData rawData = dataHandler.LoadByNumber(pos);
-            return GetString(rawData.GetPrintableStrings(), pos);
+            return string.Join(' ', rawData.GetPrintableStrings());
         }
         public void SaveNewData(List<string> productData)
         {
-            dataHandler.SaveProduct(ProductData.ParseFieldsToProduct(productData));
+            int pos = int.Parse(productData.Last());
+            productData.RemoveAt(productData.Count - 1);
+            dataHandler.SaveOrUpdateProduct(ProductData.ParseFieldsToProduct(productData), pos);
         }
         public void DeleteData(int position)
         {

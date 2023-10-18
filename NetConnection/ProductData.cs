@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Server;
 
-namespace Server
+namespace NetConnection
 {
     public class ProductData : IDataStructure
     {
